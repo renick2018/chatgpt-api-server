@@ -7,7 +7,7 @@ const routerMap = new Map()
 let Api: ChatGPTAPI
 let lastResponseTimestamp = new Date().getTime()
 
-export async function listenServer(api: ChatGPTAPI) {
+export async function listenServer(port: number, api: ChatGPTAPI) {
     Api = api
     initRouter()
     const server = http.createServer((req, rsp) => {
@@ -36,8 +36,8 @@ export async function listenServer(api: ChatGPTAPI) {
             rsp.end(res)
         })
     })
-    server.listen(8088, () => {
-        log('chatgpt server is start')
+    server.listen(port, () => {
+        log('chatgpt server is start on ', port)
     })
 }
 
