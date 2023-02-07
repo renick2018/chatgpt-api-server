@@ -108,7 +108,7 @@ async function ask(req, retry=false) {
 
         message = ""
         rsp.response = rsp.text
-        rsp.messageId = rsp.parentMessageId
+        rsp.messageId = rsp.id
         log('rsp: ', JSON.stringify(rsp))
         log('******************************')
         lastResponseTimestamp = new Date().getTime()
