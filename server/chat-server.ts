@@ -4,11 +4,9 @@ import {ChatGPTAPI} from "../src";
 import {oraPromise} from "ora";
 
 const routerMap = new Map()
-let Api: ChatGPTAPI
 let lastResponseTimestamp = new Date().getTime()
 
 export async function listenServer(port: number, api: ChatGPTAPI) {
-    Api = api
     initRouter()
     const server = http.createServer((req, rsp) => {
         const array = []
@@ -21,6 +19,7 @@ export async function listenServer(port: number, api: ChatGPTAPI) {
             if (req.method === "POST") {
                 params = Buffer.concat(array).toString()
                 try {
+                    req.api = api
                     req.params = JSON.parse(params)
                 }catch (e) {
                     log('parse post params error: ' + e)
@@ -88,14 +87,14 @@ async function ask(req, retry=false) {
         log('req: ', req.params)
         if (req.params.conversationId.length === 0) {
             rsp = await oraPromise(
-                Api.sendMessage(req.params.message),
+                req.api.sendMessage(req.params.message),
                 {
                     text: req.params.message
                 }
             )
         }else {
             rsp = await oraPromise(
-                Api.sendMessage(req.params.message, {
+                req.api.sendMessage(req.params.message, {
                     conversationId: req.params.conversationId,
                     parentMessageId: req.params.messageId
                 }),

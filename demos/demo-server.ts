@@ -1,6 +1,7 @@
 import dotenv from 'dotenv-safe'
 
 import { listenServer } from '../server/chat-server'
+import {ChatGPTAPI} from "../src";
 
 dotenv.config()
 
@@ -14,7 +15,7 @@ dotenv.config()
 async function main() {
     let data = JSON.parse(process.env.API_KEYS)
     for (let port in data) {
-        await listenServer(Number(port), data[port])
+        await listenServer(Number(port), new ChatGPTAPI({ apiKey: data[port] }))
     }
 }
 
