@@ -117,6 +117,7 @@ async function ask(req, retry=false) {
         message = e
         if (!retry) {
             // await Api.refreshSession()
+            req.conversationId = ""
             return ask(req, true)
         }
     }
