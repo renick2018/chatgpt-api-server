@@ -81,8 +81,9 @@ async function ask(req, rsp) {
   let message = ''
   let code = 0
   let node = req.params.node
-  if (node === undefined || node.length === 0) {
-    node = nodeMap.keys()[0]
+  if (node === undefined || node.length === 0 || !nodeMap.has(node)) {
+    response(rsp, -1, 'not find node', {})
+    return
   }
   let api = nodeMap.get(node)
   log('request node: ', req.node)
