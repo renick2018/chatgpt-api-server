@@ -104,7 +104,11 @@ async function ask(req, rsp) {
     log('reply: ', JSON.stringify(reply))
     reply['response'] = reply['text']
     reply['messageId'] = reply['id']
-    reply['conversationId'] = node
+    let convId = req.params.conversationId
+    if (convId.length === 0) {
+      convId = reply['id']
+    }
+    reply['conversationId'] = convId
     log('******************************')
     log('******************************\n')
   } catch (e) {
