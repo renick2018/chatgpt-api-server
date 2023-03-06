@@ -598,6 +598,7 @@ async function waitForConditionOrAtCapacity(
 
 async function solveSimpleCaptchas(page: Page) {
   try {
+    console.log('try find human check')
     const verifyYouAreHuman = await page.$('text=Verify you are human')
     if (verifyYouAreHuman) {
       console.log('find human check')
