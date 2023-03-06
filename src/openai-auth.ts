@@ -606,7 +606,7 @@ async function solveSimpleCaptchas(page: Page) {
       await verifyYouAreHuman.click({
         delay: random.int(5, 25)
       })
-      await delay(1000)
+      await delay(600000)
     }
 
     const cloudflareButton = await page.$('.hcaptcha-box')
@@ -627,7 +627,7 @@ async function solveSimpleCaptchas(page: Page) {
       await verifyText.click({
         delay: random.int(5, 25)
       })
-      await delay(1000)
+      await delay(600000)
     }
   } catch (err) {
     // ignore errors
