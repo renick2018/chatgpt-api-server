@@ -603,9 +603,9 @@ async function solveSimpleCaptchas(page: Page) {
     if (verifyYouAreHuman) {
       console.log('find human check')
       await delay(2000)
-      // await verifyYouAreHuman.click({
-      //   delay: random.int(5, 25)
-      // })
+      await verifyYouAreHuman.click({
+        delay: random.int(5, 25)
+      })
     }
 
     const cloudflareButton = await page.$('.hcaptcha-box')
@@ -618,9 +618,14 @@ async function solveSimpleCaptchas(page: Page) {
       await delay(1000)
     }
 
-    const inputs = await page.$('input')
-    for (let item in inputs) {
-      console.log(item)
+    const label = await page.$('.ctp-checkbox-container label')
+    if (label) {
+      console.log('find human check2')
+      await delay(2000)
+      await label.click({
+        delay: random.int(5, 25)
+      })
+      await delay(1000)
     }
   } catch (err) {
     // ignore errors
