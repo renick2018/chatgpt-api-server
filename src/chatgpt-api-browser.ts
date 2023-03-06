@@ -171,7 +171,8 @@ export class ChatGPTAPIBrowser extends AChatGPTAPI {
 
       this._page.on('request', this._onRequest.bind(this))
       this._page.on('response', this._onResponse.bind(this))
-
+      console.log('sleep 3s')
+      await delay(3000)
       // bypass cloudflare and login
       const authInfo = await getOpenAIAuth({
         email: this._email,

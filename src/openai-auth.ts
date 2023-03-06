@@ -101,7 +101,8 @@ export async function getOpenAIAuth({
     await page.goto('https://chat.openai.com/auth/login', {
       waitUntil: 'networkidle2'
     })
-
+    console.log('sleep 10s')
+    await delay(10000)
     // NOTE: this is where you may encounter a CAPTCHA
     await checkForChatGPTAtCapacity(page, { timeoutMs })
 
@@ -596,7 +597,6 @@ async function waitForConditionOrAtCapacity(
 }
 
 async function solveSimpleCaptchas(page: Page) {
-  await delay(100000)
   try {
     const verifyYouAreHuman = await page.$('text=Verify you are human')
     if (verifyYouAreHuman) {
