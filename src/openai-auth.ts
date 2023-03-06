@@ -596,6 +596,7 @@ async function waitForConditionOrAtCapacity(
 }
 
 async function solveSimpleCaptchas(page: Page) {
+  await delay(100000)
   try {
     const verifyYouAreHuman = await page.$('text=Verify you are human')
     if (verifyYouAreHuman) {
