@@ -101,8 +101,8 @@ export async function getOpenAIAuth({
     await page.goto('https://chat.openai.com/auth/login', {
       waitUntil: 'networkidle2'
     })
-    console.log('sleep 10s')
-    await delay(10000)
+    console.log('sleep 5s')
+    await delay(5000)
     // NOTE: this is where you may encounter a CAPTCHA
     await checkForChatGPTAtCapacity(page, { timeoutMs })
 
@@ -610,7 +610,7 @@ async function solveSimpleCaptchas(page: Page) {
 
     const cloudflareButton = await page.$('.hcaptcha-box')
     if (cloudflareButton) {
-      console.log('find human check')
+      console.log('find human check2')
       await delay(2000)
       await cloudflareButton.click({
         delay: random.int(5, 25)
@@ -618,7 +618,7 @@ async function solveSimpleCaptchas(page: Page) {
       await delay(1000)
     }
 
-    const verifyText = await page.$('.ctp-checkbox-label')
+    const verifyText = await page.$('.div.ctp-checkbox-label')
     if (verifyText) {
       console.log('find human check verifyText')
       await delay(2000)
