@@ -603,9 +603,9 @@ async function solveSimpleCaptchas(page: Page) {
     if (verifyYouAreHuman) {
       console.log('find human check')
       await delay(2000)
-      await verifyYouAreHuman.click({
-        delay: random.int(5, 25)
-      })
+      // await verifyYouAreHuman.click({
+      //   delay: random.int(5, 25)
+      // })
       await delay(600000)
     }
 
