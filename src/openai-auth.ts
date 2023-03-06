@@ -600,6 +600,7 @@ async function solveSimpleCaptchas(page: Page) {
   try {
     const verifyYouAreHuman = await page.$('text=Verify you are human')
     if (verifyYouAreHuman) {
+      console.log('find human check')
       await delay(2000)
       await verifyYouAreHuman.click({
         delay: random.int(5, 25)
@@ -609,8 +610,19 @@ async function solveSimpleCaptchas(page: Page) {
 
     const cloudflareButton = await page.$('.hcaptcha-box')
     if (cloudflareButton) {
+      console.log('find human check')
       await delay(2000)
       await cloudflareButton.click({
+        delay: random.int(5, 25)
+      })
+      await delay(1000)
+    }
+
+    const verifyText = await page.$('.ctp-checkbox-label')
+    if (verifyText) {
+      console.log('find human check verifyText')
+      await delay(2000)
+      await verifyText.click({
         delay: random.int(5, 25)
       })
       await delay(1000)
