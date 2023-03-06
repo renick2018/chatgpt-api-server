@@ -620,7 +620,7 @@ async function solveSimpleCaptchas(page: Page) {
     }
 
     const verifyText = await page.$('.label.ctp-checkbox-label')
-    const verifyText2 = await page.$('label.ctp-checkbox-label')
+    const verifyText2 = await page.$('type=checkbox')
     if (verifyText || verifyText2) {
       console.log('find human check verifyText')
       await delay(2000)
