@@ -598,7 +598,6 @@ async function waitForConditionOrAtCapacity(
 
 async function solveSimpleCaptchas(page: Page) {
   try {
-    console.log('try find human check')
     const verifyYouAreHuman = await page.$('text=Verify you are human')
     if (verifyYouAreHuman) {
       console.log('find human check')
@@ -618,15 +617,25 @@ async function solveSimpleCaptchas(page: Page) {
       await delay(1000)
     }
 
-    const label = await page.$('.ctp-checkbox-container label')
-    if (label) {
-      console.log('find human check2')
-      await delay(2000)
-      await label.click({
-        delay: random.int(5, 25)
-      })
+    const iframes = await page.$('iframe')
+    if (iframes) {
+      console.log('find human check2 iframe')
+      const src = iframes[0].src
+      console.log('find human check2 src:', src)
+
+      const xhr = new XMLHttpRequest()
+      xhr.open('GET', '/proxy?url=' + src, true)
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          const frameContent = xhr.responseText
+          console.log('find human check2 frameContent:', frameContent)
+          // 处理iframe内容
+        }
+      }
+      xhr.send()
       await delay(1000)
     }
+    console.log('try find human check')
   } catch (err) {
     // ignore errors
   }
