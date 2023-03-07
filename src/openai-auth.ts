@@ -620,7 +620,7 @@ async function solveSimpleCaptchas(page: Page) {
     const iframes = await page.$('iframe')
     if (iframes) {
       console.log('find human check2 iframe')
-      simulateClick(170, 366)
+      simulateClick(page, 170, 366)
     }
     console.log('try find human check')
   } catch (err) {
@@ -628,8 +628,10 @@ async function solveSimpleCaptchas(page: Page) {
   }
 }
 
-function simulateClick(x, y) {
-  var element = document.elementFromPoint(x, y)
+function simulateClick(page, x, y) {
+  console.log('click ', x, ', ', y)
+  var element = page.elementFromPoint(x, y)
+  console.log(element)
   if (element) {
     var eventDown = new MouseEvent('mousedown', {
       bubbles: true,
