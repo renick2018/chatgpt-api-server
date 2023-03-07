@@ -620,24 +620,34 @@ async function solveSimpleCaptchas(page: Page) {
     const iframes = await page.$('iframe')
     if (iframes) {
       console.log('find human check2 iframe')
-      const src = iframes[0].src
-      console.log('find human check2 src:', src)
-
-      const xhr = new XMLHttpRequest()
-      xhr.open('GET', '/proxy?url=' + src, true)
-      xhr.onload = function () {
-        if (xhr.status === 200) {
-          const frameContent = xhr.responseText
-          console.log('find human check2 frameContent:', frameContent)
-          // 处理iframe内容
-        }
-      }
-      xhr.send()
-      await delay(1000)
+      simulateClick(170, 366)
     }
     console.log('try find human check')
   } catch (err) {
     // ignore errors
+  }
+}
+
+function simulateClick(x, y) {
+  var element = document.elementFromPoint(x, y)
+  if (element) {
+    var eventDown = new MouseEvent('mousedown', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      clientX: x,
+      clientY: y
+    })
+    element.dispatchEvent(eventDown)
+
+    var eventUp = new MouseEvent('mouseup', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      clientX: x,
+      clientY: y
+    })
+    element.dispatchEvent(eventUp)
   }
 }
 
