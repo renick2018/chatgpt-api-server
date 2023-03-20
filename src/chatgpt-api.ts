@@ -247,6 +247,7 @@ export class ChatGPTAPI {
               const error = new types.ChatGPTError(msg, { cause: res })
               error.statusCode = res.status
               error.statusText = res.statusText
+              error.statusError = JSON.parse(reason)
               return reject(error)
             }
 
