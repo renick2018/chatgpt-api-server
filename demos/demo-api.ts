@@ -7,13 +7,25 @@ import { ChatGPTAPI } from 'src/chatgpt-api'
 dotenv.config()
 
 const apiMap = new Map<string, ChatGPTAPI>()
+let serverPort = 8088
+let maxModelTokens = 4000
+let maxResponseTokens = 1000
 
 async function main() {
   if (!fs.existsSync('./log')) {
     fs.mkdirSync('./log')
   }
-  const port = process.env.SERVER_PORT
-  await initServer(Number(port))
+  if (process.env.SERVER_PORT) {
+    serverPort = Number(process.env.SERVER_PORT)
+  }
+  if (process.env.MAX_MODEL_TOKENS) {
+    maxModelTokens = Number(process.env.MAX_MODEL_TOKENS)
+  }
+  if (process.env.MAX_RESPOONSE_TOKENS) {
+    maxResponseTokens = Number(process.env.MAX_RESPOONSE_TOKENS)
+  }
+
+  await initServer(serverPort)
 }
 
 main().catch((err) => {
@@ -73,7 +85,9 @@ async function ask(params) {
     if (!apiMap.has(apikey)) {
       const api = new ChatGPTAPI({
         apiKey: apikey,
-        debug: false
+        debug: false,
+        maxModelTokens: maxModelTokens,
+        maxResponseTokens: maxResponseTokens
       })
       apiMap.set(apikey, api)
     }
