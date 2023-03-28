@@ -49,12 +49,12 @@ export class ChatGPTAPI {
   constructor(opts: types.ChatGPTAPIOptions) {
     const {
       apiKey,
-      apiBaseUrl = 'https://api.openai.com',
+      apiBaseUrl = 'https://api.openai.com/v1',
       debug = false,
       messageStore,
       completionParams,
       systemMessage,
-      maxModelTokens = 4096,
+      maxModelTokens = 4000,
       maxResponseTokens = 1000,
       getMessageById,
       upsertMessage,
@@ -125,6 +125,7 @@ export class ChatGPTAPI {
    * @param opts.timeoutMs - Optional timeout in milliseconds (defaults to no timeout)
    * @param opts.onProgress - Optional callback which will be invoked every time the partial response is updated
    * @param opts.abortSignal - Optional callback used to abort the underlying `fetch` call using an [AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController)
+   * @param completionParams - Optional overrides to send to the [OpenAI chat completion API](https://platform.openai.com/docs/api-reference/chat/create). Options like `temperature` and `presence_penalty` can be tweaked to change the personality of the assistant.
    *
    * @returns The response from ChatGPT
    */
@@ -137,7 +138,8 @@ export class ChatGPTAPI {
       messageId = uuidv4(),
       timeoutMs,
       onProgress,
-      stream = onProgress ? true : false
+      stream = onProgress ? true : false,
+      completionParams
     } = opts
 
     let { abortSignal } = opts
@@ -170,7 +172,7 @@ export class ChatGPTAPI {
 
     const responseP = new Promise<types.ChatMessage>(
       async (resolve, reject) => {
-        const url = `${this._apiBaseUrl}/v1/chat/completions`
+        const url = `${this._apiBaseUrl}/chat/completions`
         const headers = {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this._apiKey}`
@@ -178,6 +180,7 @@ export class ChatGPTAPI {
         const body = {
           max_tokens: maxTokens,
           ...this._completionParams,
+          ...completionParams,
           messages,
           stream
         }
@@ -210,17 +213,15 @@ export class ChatGPTAPI {
 
                   if (response?.choices?.length) {
                     const delta = response.choices[0].delta
-                    if (delta?.content) {
-                      result.delta = delta.content
-                      result.text += delta.content
-                      result.detail = response
+                    result.delta = delta.content
+                    if (delta?.content) result.text += delta.content
+                    result.detail = response
 
-                      if (delta.role) {
-                        result.role = delta.role
-                      }
-
-                      onProgress?.(result)
+                    if (delta.role) {
+                      result.role = delta.role
                     }
+
+                    onProgress?.(result)
                   }
                 } catch (err) {
                   console.warn('OpenAI stream SEE event unexpected error', err)
@@ -334,15 +335,15 @@ export class ChatGPTAPI {
     }
 
     const systemMessageOffset = messages.length
-    let nextMessages = messages.concat([
-      {
-        ...{
-          role: 'user',
-          content: text,
-          name: opts.name
-        }
-      }
-    ])
+    let nextMessages = text
+      ? messages.concat([
+          {
+            role: 'user',
+            content: text,
+            name: opts.name
+          }
+        ])
+      : messages
     let numTokens = 0
 
     do {
@@ -350,13 +351,13 @@ export class ChatGPTAPI {
         .reduce((prompt, message) => {
           switch (message.role) {
             case 'system':
-              return [prompt, `Instructions:\n${message.content}`]
+              return prompt.concat([`Instructions:\n${message.content}`])
             case 'user':
-              return [prompt, `${userLabel}:\n${message.content}`]
+              return prompt.concat([`${userLabel}:\n${message.content}`])
             default:
-              return [prompt, `${assistantLabel}:\n${message.content}`]
+              return prompt.concat([`${assistantLabel}:\n${message.content}`])
           }
-        }, [])
+        }, [] as string[])
         .join('\n\n')
 
       const nextNumTokensEstimate = await this._getTokenCount(prompt)
@@ -386,11 +387,9 @@ export class ChatGPTAPI {
 
       nextMessages = nextMessages.slice(0, systemMessageOffset).concat([
         {
-          ...{
-            role: parentMessageRole,
-            content: parentMessage.text,
-            name: parentMessage.name
-          }
+          role: parentMessageRole,
+          content: parentMessage.text,
+          name: parentMessage.name
         },
         ...nextMessages.slice(systemMessageOffset)
       ])
