@@ -3,9 +3,21 @@ import { oraPromise } from 'ora'
 
 import { ChatGPTAPI } from '../chatgpt-api'
 
-let nodeMap = new Map()
+let nodeMap = new Map<string, ChatGPTAPI>()
+let maxModelTokens = 4000
+let maxResponseTokens = 1000
+let model = 'gpt-3.5-turbo'
 
 export async function listenServer(port: number) {
+  if (process.env.MAX_MODEL_TOKENS) {
+    maxModelTokens = Number(process.env.MAX_MODEL_TOKENS)
+  }
+  if (process.env.MAX_RESPOONSE_TOKENS) {
+    maxResponseTokens = Number(process.env.MAX_RESPOONSE_TOKENS)
+  }
+  if (process.env.CHAT_MODEL) {
+    model = process.env.CHAT_MODEL
+  }
   const server = http.createServer((req, rsp) => {
     const array = []
     req.on('data', (chunk) => {
@@ -69,7 +81,12 @@ async function addNodes(req, rsp) {
       item.email,
       new ChatGPTAPI({
         apiKey: item.apiKey,
-        debug: false
+        debug: false,
+        maxModelTokens: maxModelTokens,
+        maxResponseTokens: maxResponseTokens,
+        completionParams: {
+          model: model
+        }
       })
     )
     console.log('load api: ', item.email)
