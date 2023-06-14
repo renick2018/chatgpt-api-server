@@ -107,10 +107,10 @@ async function ask(req, rsp) {
     return
   }
   let api = nodeMap.get(node)
-  log('request node: ' + req.node)
+  log('request node: ' + node)
   let reply = {}
   try {
-    log('request: ' + req.params)
+    log('request: ' + JSON.stringify(req.params))
     let context = {}
     if (req.params.messageId.length > 0) {
       context = {
