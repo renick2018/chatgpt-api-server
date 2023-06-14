@@ -1,3 +1,4 @@
+import fs from 'fs'
 import http from 'http'
 import { oraPromise } from 'ora'
 
@@ -9,6 +10,9 @@ let maxResponseTokens = 1000
 let model = 'gpt-3.5-turbo'
 
 export async function listenServer(port: number) {
+  if (!fs.existsSync('./log')) {
+    fs.mkdirSync('./log')
+  }
   if (process.env.MAX_MODEL_TOKENS) {
     maxModelTokens = Number(process.env.MAX_MODEL_TOKENS)
   }
@@ -24,11 +28,11 @@ export async function listenServer(port: number) {
       array.push(chunk)
     })
     req.on('end', async () => {
-      log('params parse: ', req.method)
+      log('params parse: ' + req.method)
       if (req.method === 'POST') {
         let params = Buffer.concat(array).toString()
         try {
-          log('params:', params)
+          log('params:' + params)
           if (typeof params === 'string') {
             req.params = JSON.parse(params)
           }
@@ -40,7 +44,7 @@ export async function listenServer(port: number) {
     })
   })
   server.listen(port, () => {
-    log('chatgpt server is start on ', port)
+    log('chatgpt server is start on ' + port)
   })
 }
 
@@ -103,10 +107,10 @@ async function ask(req, rsp) {
     return
   }
   let api = nodeMap.get(node)
-  log('request node: ', req.node)
+  log('request node: ' + req.node)
   let reply = {}
   try {
-    log('request: ', req.params)
+    log('request: ' + req.params)
     let context = {}
     if (req.params.messageId.length > 0) {
       context = {
@@ -118,7 +122,7 @@ async function ask(req, rsp) {
       text: req.params.message
     })
 
-    log('reply: ', JSON.stringify(reply))
+    log('reply: ' + JSON.stringify(reply))
     reply['response'] = reply['text']
     reply['messageId'] = reply['id']
     let convId = req.params.conversationId
@@ -137,6 +141,12 @@ async function ask(req, rsp) {
   response(rsp, code, message, reply)
 }
 
-function log(str, ...optionalParams: any[]) {
-  console.log(new Date().toLocaleString() + ': ' + str, ...optionalParams)
+function log(text: string) {
+  const filePath = './log/' + new Date().toISOString().split('T')[0] + '.txt'
+  const options = { flag: 'a' }
+
+  fs.writeFile(filePath, text + '\n', options, (err) => {
+    if (err) throw err
+    console.log(text)
+  })
 }
