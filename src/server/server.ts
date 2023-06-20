@@ -129,6 +129,7 @@ async function ask(req, rsp) {
     log('reply: ' + JSON.stringify(reply))
     reply['response'] = reply['text']
     reply['messageId'] = reply['id']
+    reply['function_call'] = reply['function_call']
     let convId = req.params.conversationId
     if (convId.length === 0) {
       convId = reply['id']

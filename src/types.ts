@@ -61,8 +61,9 @@ export type SendMessageBrowserOptions = {
 
 export interface ChatMessage {
   id: string
-  text: string
+  text?: string | null
   role: Role
+  function_call?: any | null
   name?: string
   delta?: string
   detail?: any
@@ -241,7 +242,9 @@ export namespace openai {
      * @type {string}
      * @memberof ChatCompletionResponseMessage
      */
-    content: string
+    content?: string | null
+
+    function_call?: any | null
   }
   export declare const ChatCompletionResponseMessageRoleEnum: {
     readonly System: 'system'

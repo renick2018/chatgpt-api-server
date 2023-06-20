@@ -264,9 +264,14 @@ export class ChatGPTAPI {
 
             if (response?.choices?.length) {
               const message = response.choices[0].message
-              result.text = message.content
+              if (message.content) {
+                result.text = message.content
+              }
               if (message.role) {
                 result.role = message.role
+              }
+              if (message.function_call) {
+                result.function_call = message.function_call
               }
             } else {
               const res = response as any
