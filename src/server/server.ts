@@ -112,15 +112,37 @@ async function ask(req, rsp) {
   try {
     log('request: ' + JSON.stringify(req.params))
     // if (req.params.messageId.length > 0) {
-    const currentDate = new Date().toISOString().split('T')[0]
-    let context = {
-      systemMessage: req.params.systemMessage
-        ? req.params.systemMessage
-        : `You are ChatGPT, a large language model trained by OpenAI. Answer as concisely as possible.\nKnowledge cutoff: 2021-09-01\nCurrent date: ${currentDate}`,
-      parentMessageId: req.params.messageId,
-      completionParams: {
-        function_call: req.params.function_call,
-        functions: req.params.functions
+    let context = {}
+
+    if (req.params.systemMessage) {
+      context = {
+        systemMessage: req.params.systemMessage,
+        parentMessageId: req.params.messageId ? req.params.messageId : ''
+      }
+    }
+
+    if (req.params.functions) {
+      context = {
+        parentMessageId: req.params.messageId ? req.params.messageId : '',
+        completionParams: {
+          function_call: req.params.function_call
+            ? req.params.function_call
+            : 'auto',
+          functions: req.params.functions
+        }
+      }
+    }
+
+    if (req.params.functions && req.params.systemMessage) {
+      context = {
+        systemMessage: req.params.systemMessage,
+        parentMessageId: req.params.messageId ? req.params.messageId : '',
+        completionParams: {
+          function_call: req.params.function_call
+            ? req.params.function_call
+            : 'auto',
+          functions: req.params.functions
+        }
       }
     }
 
