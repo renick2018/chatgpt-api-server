@@ -85,7 +85,7 @@ async function addNodes(req, rsp) {
       item.email,
       new ChatGPTAPI({
         apiKey: item.apiKey,
-        debug: true,
+        debug: false,
         maxModelTokens: maxModelTokens,
         maxResponseTokens: maxResponseTokens,
         completionParams: {
@@ -111,14 +111,16 @@ async function ask(req, rsp) {
   let reply = {}
   try {
     log('request: ' + JSON.stringify(req.params))
-    let context = {}
-    if (req.params.messageId.length > 0) {
-      context = {
-        parentMessageId: req.params.messageId,
-        completionParams: {
-          function_call: req.params.function_call,
-          functions: req.params.functions
-        }
+    // if (req.params.messageId.length > 0) {
+    const currentDate = new Date().toISOString().split('T')[0]
+    let context = {
+      systemMessage: req.params.systemMessage
+        ? req.params.systemMessage
+        : `You are ChatGPT, a large language model trained by OpenAI. Answer as concisely as possible.\nKnowledge cutoff: 2021-09-01\nCurrent date: ${currentDate}`,
+      parentMessageId: req.params.messageId,
+      completionParams: {
+        function_call: req.params.function_call,
+        functions: req.params.functions
       }
     }
 
