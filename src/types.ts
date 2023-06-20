@@ -328,6 +328,10 @@ export namespace openai {
      * @memberof CreateChatCompletionRequest
      */
     user?: string
+
+    functions?: object | null
+
+    function_call?: string | null
   }
   /**
    * @type CreateChatCompletionRequestStop

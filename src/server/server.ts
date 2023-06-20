@@ -85,7 +85,7 @@ async function addNodes(req, rsp) {
       item.email,
       new ChatGPTAPI({
         apiKey: item.apiKey,
-        debug: false,
+        debug: true,
         maxModelTokens: maxModelTokens,
         maxResponseTokens: maxResponseTokens,
         completionParams: {
@@ -114,7 +114,11 @@ async function ask(req, rsp) {
     let context = {}
     if (req.params.messageId.length > 0) {
       context = {
-        parentMessageId: req.params.messageId
+        parentMessageId: req.params.messageId,
+        completionParams: {
+          function_call: req.params.function_call,
+          functions: req.params.functions
+        }
       }
     }
 
